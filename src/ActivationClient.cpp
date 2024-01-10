@@ -11,8 +11,6 @@
 #include "indiekey/messages/OfflineRequest.h"
 #include "indiekey/messages/TrialRequest.h"
 
-#include <fmt/core.h>
-
 indiekey::ActivationClient::ActivationClient()
 {
     crypto::init();
@@ -29,7 +27,7 @@ void indiekey::ActivationClient::ping (int value)
 
     auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
 
-    fmt::println ("{} {}", response.statusCode, jsonResponse.dump());
+    std::cout << response.statusCode << " " << jsonResponse.dump() << std::endl;
 }
 
 void indiekey::ActivationClient::setProductData (const char* encodedProductData)
@@ -309,7 +307,7 @@ void indiekey::ActivationClient::installActivation (indiekey::Activation&& activ
     auto status = activation.validate (productData_->productUid, getUniqueMachineId(), productData_->verifyingKey);
 
     if (status != Activation::Status::Valid)
-        throw std::runtime_error (fmt::format ("Activation failed: {}", Activation::statusToString (status)));
+        throw std::runtime_error (std::string ("Activation failed: ") + Activation::statusToString (status));
 
     activationsDatabase_.saveActivation (activation);
 

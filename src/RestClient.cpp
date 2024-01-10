@@ -5,13 +5,12 @@
 
 #include "indiekey/RestClient.h"
 
-#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include <utility>
 
 indiekey::RestClient::Exception::Exception (int statusCode, const char* message) :
-    mMessage (fmt::format ("{} {}", statusCode, message))
+    mMessage (std::to_string (statusCode) + " " + message)
 {
 }
 
@@ -100,7 +99,7 @@ void indiekey::RestClient::Response::throwIfNotSuccessful()
 
 std::string indiekey::RestClient::Response::toString() const
 {
-    return fmt::format ("{} ({})", body.toRawUTF8(), statusCode);
+    return body.toStdString() + " (" + std::to_string (statusCode) + ")";
 }
 
 const char* indiekey::RestClient::Exception::what() const noexcept

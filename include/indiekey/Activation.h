@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "License.h"
-#include <fmt/core.h>
 #include <juce_core/juce_core.h>
 #include <nlohmann/json.hpp>
 
