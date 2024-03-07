@@ -132,7 +132,7 @@ void indiekey::ActivationClient::updateActivations (ValidationStrategy validatio
     response.throwIfNotSuccessful();
     auto responseActivations = nlohmann::json::parse (response.body.toRawUTF8()).get<std::vector<Activation>>();
 
-    for (auto& activation : requestActivations)
+    for (auto& activation : responseActivations)
         activationsDatabase_.saveActivation (activation);
 
     // Delete all activations from local disk which are not in the response.
