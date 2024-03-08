@@ -259,9 +259,9 @@ void indiekey::ActivationClient::installActivationFile (const juce::File& fileTo
         // accidentally tries to load a request file instead of a response file.
         try
         {
-            nlohmann::json::parse (json.toRawUTF8()).get<OfflineRequest>();
+            (void)nlohmann::json::parse (json.toRawUTF8()).get<OfflineRequest>();
         }
-        catch (const std::exception& e)
+        catch (const std::exception&)
         {
             // Parsing as OfflineRequest failed so something else is going on.
             throw std::runtime_error (originalException.what());
