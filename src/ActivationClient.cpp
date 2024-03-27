@@ -10,13 +10,14 @@
 #include "indiekey/messages/ActivationRequest.h"
 #include "indiekey/messages/OfflineRequest.h"
 #include "indiekey/messages/TrialRequest.h"
+#include "indiekey/util/ScopedFunction.h"
 
 indiekey::ActivationClient::ActivationClient()
 {
     crypto::init();
 }
 
-void indiekey::ActivationClient::ping (int value)
+void indiekey::ActivationClient::ping (int value) const
 {
     nlohmann::json j;
     j.at ("id") = value;
@@ -27,7 +28,7 @@ void indiekey::ActivationClient::ping (int value)
 
     auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
 
-    std::cout << response.statusCode << " " << jsonResponse.dump() << std::endl;
+    std::cout << response.statusCode << " " << jsonResponse.dump() << '\n';
 }
 
 void indiekey::ActivationClient::setProductData (const char* encodedProductData)
@@ -38,7 +39,7 @@ void indiekey::ActivationClient::setProductData (const char* encodedProductData)
     if (std::strlen (encodedProductData) == 0)
         throw std::runtime_error ("Product data is empty");
 
-    nlohmann::json jsonData = nlohmann::json::parse (decodeFromBase64 (encodedProductData));
+    nlohmann::json const jsonData = nlohmann::json::parse (decodeFromBase64 (encodedProductData));
 
     if (productData_ == nullptr)
         productData_ = std::make_unique<ProductData>();
@@ -52,9 +53,13 @@ void indiekey::ActivationClient::setProductData (const char* encodedProductData)
 
 void indiekey::ActivationClient::validate (ValidationStrategy validationStrategy)
 {
-    throwIfProductDataIsNotSet();
+    const Defer defer ([this] {
+        listeners_.call ([this] (Subscriber& s) {
+            s.onActivationsUpdated (mostValuableActivation_.get());
+        });
+    });
 
-    mostValuableActivation_.reset();
+    throwIfProductDataIsNotSet();
 
     updateActivations (validationStrategy);
 
@@ -70,12 +75,14 @@ void indiekey::ActivationClient::validate (ValidationStrategy validationStrategy
         // When the strategy is ValidationStrategy::LocalValidOnly we only store the activation when it is valid in
         // order to allow a first, quick check without triggering warnings when an activation is not valid.
         if (validationStrategy != ValidationStrategy::LocalValidOnly || status == Activation::Status::Valid)
+        {
             mostValuableActivation_ = std::move (activation);
+            return;
+        }
     }
 
-    listeners_.call ([this] (Subscriber& s) {
-        s.onActivationsUpdated (mostValuableActivation_.get());
-    });
+    // At this point no activation is available, so let's reset.
+    mostValuableActivation_.reset();
 }
 
 void indiekey::ActivationClient::activate (const std::string& emailAddress, const std::string& licenseKey)
@@ -88,7 +95,7 @@ void indiekey::ActivationClient::activate (const std::string& emailAddress, cons
     if (licenseKey.empty())
         throw std::runtime_error ("License key is empty");
 
-    ActivationRequest activationRequest (
+    ActivationRequest const activationRequest (
         productData_->productUid,
         getUniqueMachineIdAsBase64(),
         emailAddress,

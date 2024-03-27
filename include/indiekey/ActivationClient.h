@@ -148,7 +148,7 @@ public:
      * Sends a ping to the server.
      * @param value
      */
-    void ping (int value);
+    void ping (int value) const;
 
     /**
      * @returns A default device info string which consists of computer name, operating system name, cpu model, device

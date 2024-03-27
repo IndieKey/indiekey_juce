@@ -12,6 +12,7 @@ target_sources(indiekey_juce
         include/indiekey/Activation.h
         include/indiekey/Crypto.h
         include/indiekey/ActivationsDatabase.h
+        include/indiekey/util/ScopedFunction.h
 
         # Sources
         src/ActivationClient.cpp
