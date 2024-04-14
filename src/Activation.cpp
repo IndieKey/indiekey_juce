@@ -235,7 +235,7 @@ bool indiekey::Activation::isMoreValuableThan (const indiekey::Activation& other
 bool indiekey::Activation::isExpired() const
 {
     auto now = juce::Time::getCurrentTime();
-    if (expiresAt_.has_value() && now > expiresAt_)
+    if (expiresAt_.has_value() && now > expiresAt_.value())
         return true;
     if (licenseExpiresAt_.has_value() && now > licenseExpiresAt_.value())
         return true;
