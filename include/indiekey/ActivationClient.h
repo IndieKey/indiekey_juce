@@ -171,7 +171,7 @@ public:
     /**
      * @returns The path to the file where local activations are stored.
      */
-    juce::File getLocalActivationsDatabaseFile() const;
+    [[nodiscard]] juce::File getLocalActivationsDatabaseFile() const;
 
     /**
      * Adds given subscriber to the list of subscribers. The subscriber will be notified when the activation client
