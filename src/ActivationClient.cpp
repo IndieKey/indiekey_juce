@@ -10,7 +10,6 @@
 #include "indiekey/messages/ActivationRequest.h"
 #include "indiekey/messages/OfflineRequest.h"
 #include "indiekey/messages/TrialRequest.h"
-#include "indiekey/util/ScopedFunction.h"
 
 const char* indiekey::ActivationClient::trialStatusToString (const TrialStatus status)
 {
@@ -36,7 +35,7 @@ indiekey::ActivationClient::ActivationClient()
 
 int indiekey::ActivationClient::ping (const int value) const
 {
-    auto response = restClient_->get ("/ping?timestamp=" + juce::String(value));
+    auto response = restClient_->get ("/ping?timestamp=" + juce::String (value));
     response.throwIfNotSuccessful();
     const auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
     return jsonResponse["timestamp"].get<int>();
@@ -62,9 +61,9 @@ void indiekey::ActivationClient::setProductData (const char* encodedProductData)
     activationsDatabase_.openDatabase (ActivationsDatabase::Options { getLocalActivationsDatabaseFile() });
 }
 
-void indiekey::ActivationClient::validate (ValidationStrategy validationStrategy)
+void indiekey::ActivationClient::validate (const ValidationStrategy validationStrategy)
 {
-    const Defer defer ([this] {
+    juce::ErasedScopeGuard callListeners ([this] {
         listeners_.call ([this] (Subscriber& s) {
             s.onActivationsUpdated (mostValuableActivation_.get());
         });
