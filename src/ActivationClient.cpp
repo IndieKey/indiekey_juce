@@ -12,23 +12,34 @@
 #include "indiekey/messages/TrialRequest.h"
 #include "indiekey/util/ScopedFunction.h"
 
+const char* indiekey::ActivationClient::trialStatusToString (const TrialStatus status)
+{
+    switch (status)
+    {
+    case TrialStatus::Undefined:
+        return "Undefined";
+    case TrialStatus::TrialAvailable:
+        return "TrialAvailable";
+    case TrialStatus::TrialActive:
+        return "TrialActive";
+    case TrialStatus::TrialExpired:
+        return "TrialExpired";
+    default:
+        return "n/a";
+    }
+}
+
 indiekey::ActivationClient::ActivationClient()
 {
     crypto::init();
 }
 
-void indiekey::ActivationClient::ping (int value) const
+int indiekey::ActivationClient::ping (const int value) const
 {
-    nlohmann::json j;
-    j.at ("id") = value;
-
-    auto response = restClient_->post ("/ping", j);
-
+    auto response = restClient_->get ("/ping?timestamp=" + juce::String(value));
     response.throwIfNotSuccessful();
-
-    auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
-
-    std::cout << response.statusCode << " " << jsonResponse.dump() << '\n';
+    const auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
+    return jsonResponse["timestamp"].get<int>();
 }
 
 void indiekey::ActivationClient::setProductData (const char* encodedProductData)
