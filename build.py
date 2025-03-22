@@ -103,16 +103,17 @@ def build(args):
     path_to_module = Path(args.path_to_build) / juce_module_name
     path_to_module.mkdir(parents=True, exist_ok=True)
 
-    env = os.environ.copy()
-    env['VCPKG_OVERLAY_TRIPLETS'] = str(script_dir / 'triplets')
-
-    subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.sh'], check=True, cwd=script_dir)
-    vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg'
-
     path_to_libs = path_to_module / 'libs'  # Note: this is JUCE module specific
     path_to_libs.mkdir(parents=True, exist_ok=True)
 
+    env = os.environ.copy()
+    env['VCPKG_OVERLAY_TRIPLETS'] = str(script_dir / 'triplets')
+
     if platform.system() == 'Darwin':
+
+        subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.sh'], check=True, cwd=script_dir)
+        vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg'
+
         vcpkg_installed_arm64 = script_dir / 'vcpkg_installed_arm64'
         vcpkg_installed_x86_64 = script_dir / 'vcpkg_installed_x86_64'
 
@@ -129,6 +130,20 @@ def build(args):
                   path_to_libs_macosx, '*.a')
 
         shutil.copytree(f'{vcpkg_installed_arm64}/macos-arm64/include', path_to_module / 'include', dirs_exist_ok=True)
+
+    elif platform.system() == 'Windows':
+        subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.bat'], check=True, cwd=script_dir)
+        vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg.exe'
+
+        vcpkg_installed = script_dir / 'vcpkg_installed'
+        subprocess.run([vcpkg, 'install', '--triplet=windows-x64', f'--x-install-root={vcpkg_installed}'],
+                       check=True, cwd=script_dir, env=env)
+
+        path_to_libs_vs2022_x64_mt = path_to_libs / 'VisualStudio2022' / 'x64' / 'MT'
+        path_to_libs_vs2022_x64_mt.mkdir(parents=True, exist_ok=True)
+
+        shutil.copytree(f'{vcpkg_installed}/windows-x64/include', path_to_module / 'include', dirs_exist_ok=True)
+        shutil.copytree(f'{vcpkg_installed}/windows-x64/lib', path_to_libs_vs2022_x64_mt, dirs_exist_ok=True)
 
     shutil.copytree('include', path_to_module / 'include', dirs_exist_ok=True)
     shutil.copytree('src', path_to_module / 'src', dirs_exist_ok=True)
