@@ -1,6 +1,6 @@
 dist/
 .idea/
 .DS_Store
-build/
+build*
 downloads/
 vcpkg_installed*
