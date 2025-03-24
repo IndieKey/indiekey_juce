@@ -114,8 +114,8 @@ def build(args):
         shutil.copytree(f'{vcpkg_installed_arm64}/macos-arm64/include', path_to_module / 'include', dirs_exist_ok=True)
 
     elif platform.system() == 'Windows':
-        subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.bat'], check=True, cwd=script_dir)
-        vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg.exe'
+        subprocess.run([script_dir / 'submodules' / 'vcpkg' / 'bootstrap-vcpkg.bat'], check=True, cwd=script_dir)
+        vcpkg = script_dir / 'submodules' / 'vcpkg' / 'vcpkg.exe'
 
         # Due to crappy windows paths longer than 260 are not supported. When using the default buildtrees root, the path
         # becomes too long, so instead we place the buildtrees in the root of the drive.
