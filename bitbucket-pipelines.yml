@@ -14,7 +14,7 @@ definitions:
           - python3 -m pip install pygit2
           - python3 -u build.py --path-to-build build-macos --build-number $BITBUCKET_BUILD_NUMBER
         artifacts:
-          - build-macos
+          - build-macos/**
     - step: &build-windows
         runs-on:
           - 'self.hosted'
@@ -25,7 +25,7 @@ definitions:
           - python -m pip install pygit2
           - python -u build.py --path-to-build build-windows --build-number "$env:BITBUCKET_BUILD_NUMBER"
         artifacts:
-          - build-windows
+          - build-windows/**
     - step: &build-dist
         runs-on:
           - 'self.hosted'
