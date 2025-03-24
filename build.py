@@ -154,11 +154,11 @@ def build(args):
         # Headers
         shutil.copytree(f'{vcpkg_installed}/windows-x64-md/include', path_to_module / 'include', dirs_exist_ok=True)
 
-    shutil.copytree('include', path_to_module / 'include', dirs_exist_ok=True)
-    shutil.copytree('src', path_to_module / 'src', dirs_exist_ok=True)
-    shutil.copy2('CMakeLists.txt', path_to_module)
-    shutil.copy2('indiekey_juce.h', path_to_module)
-    shutil.copy2('indiekey_juce.cpp', path_to_module)
+    shutil.copytree(script_dir / 'include', path_to_module / 'include', dirs_exist_ok=True)
+    shutil.copytree(script_dir / 'src', path_to_module / 'src', dirs_exist_ok=True)
+    shutil.copy2(script_dir / 'CMakeLists.txt', path_to_module)
+    shutil.copy2(script_dir / 'indiekey_juce.h', path_to_module)
+    shutil.copy2(script_dir / 'indiekey_juce.cpp', path_to_module)
 
 
 def main():
