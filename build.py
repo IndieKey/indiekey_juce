@@ -81,24 +81,6 @@ def lipo_glob(input_base_path_x86_64: Path, input_base_path_arm64: Path, output_
         lipo(input_base_path_x86_64, input_base_path_arm64, output_base_path, path_to_binary)
 
 
-def build_libsodium(path_to_libsodium, cpu, system):
-    env = os.environ.copy()
-    env['OSX_DEPLOYMENT_TARGET'] = '10.15'
-
-    subprocess.run(
-        ['zig', 'build', '-Doptimize=ReleaseSmall', f'-Dtarget={cpu}-{system}', '-Dshared=false', '-Dtest=false'],
-        cwd=path_to_libsodium, check=True, env=env)
-
-
-def vcpkg_install(triplet):
-    env = os.environ.copy()
-    env['VCPKG_OVERLAY_TRIPLETS'] = str(script_dir / 'triplets')
-
-    vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg'
-    subprocess.run([vcpkg, 'install', '--triplet=' + triplet, '--x-install-root=vcpkg_installed_' + triplet],
-                   check=True, cwd=script_dir, env=env)
-
-
 def build(args):
     path_to_module = Path(args.path_to_build) / juce_module_name
     path_to_module.mkdir(parents=True, exist_ok=True)
@@ -135,10 +117,14 @@ def build(args):
         subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.bat'], check=True, cwd=script_dir)
         vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg.exe'
 
+        # Due to crappy windows paths longer than 260 are not supported. When using the default buildtrees root, the path
+        # becomes too long, so instead we place the buildtrees in the root of the drive.
+        vcpkg_buildtrees_root = 'C:\\indiekey_juce_vcpkg_buildtrees'
         vcpkg_installed = script_dir / 'vcpkg_installed'
 
         # MT
-        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-mt', f'--x-install-root={vcpkg_installed}'],
+        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-mt', f'--x-buildtrees-root={vcpkg_buildtrees_root}',
+                        f'--x-install-root={vcpkg_installed}'],
                        check=True, cwd=script_dir, env=env)
 
         path_to_libs_vs2022_x64_mt = path_to_libs / 'VisualStudio2022' / 'x64' / 'MT'
@@ -151,7 +137,8 @@ def build(args):
         shutil.copytree(f'{vcpkg_installed}/windows-x64-mt/debug/lib', path_to_libs_vs2022_x64_mtd, dirs_exist_ok=True)
 
         # MD
-        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-md', f'--x-install-root={vcpkg_installed}'],
+        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-md', f'--x-buildtrees-root={vcpkg_buildtrees_root}',
+                        f'--x-install-root={vcpkg_installed}'],
                        check=True, cwd=script_dir, env=env)
 
         path_to_libs_vs2022_x64_md = path_to_libs / 'VisualStudio2022' / 'x64' / 'MD'
