@@ -136,14 +136,36 @@ def build(args):
         vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg.exe'
 
         vcpkg_installed = script_dir / 'vcpkg_installed'
-        subprocess.run([vcpkg, 'install', '--triplet=windows-x64', f'--x-install-root={vcpkg_installed}'],
+
+        # MT
+        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-mt', f'--x-install-root={vcpkg_installed}'],
                        check=True, cwd=script_dir, env=env)
 
         path_to_libs_vs2022_x64_mt = path_to_libs / 'VisualStudio2022' / 'x64' / 'MT'
         path_to_libs_vs2022_x64_mt.mkdir(parents=True, exist_ok=True)
 
-        shutil.copytree(f'{vcpkg_installed}/windows-x64/include', path_to_module / 'include', dirs_exist_ok=True)
-        shutil.copytree(f'{vcpkg_installed}/windows-x64/lib', path_to_libs_vs2022_x64_mt, dirs_exist_ok=True)
+        path_to_libs_vs2022_x64_mtd = path_to_libs / 'VisualStudio2022' / 'x64' / 'MTd'
+        path_to_libs_vs2022_x64_mtd.mkdir(parents=True, exist_ok=True)
+
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-mt/lib', path_to_libs_vs2022_x64_mt, dirs_exist_ok=True)
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-mt/debug/lib', path_to_libs_vs2022_x64_mtd, dirs_exist_ok=True)
+
+        # MD
+        subprocess.run([vcpkg, 'install', '--triplet=windows-x64-md', f'--x-install-root={vcpkg_installed}'],
+                       check=True, cwd=script_dir, env=env)
+
+        path_to_libs_vs2022_x64_md = path_to_libs / 'VisualStudio2022' / 'x64' / 'MD'
+        path_to_libs_vs2022_x64_md.mkdir(parents=True, exist_ok=True)
+
+        path_to_libs_vs2022_x64_mdd = path_to_libs / 'VisualStudio2022' / 'x64' / 'MDd'
+        path_to_libs_vs2022_x64_mdd.mkdir(parents=True, exist_ok=True)
+
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-md/lib', path_to_libs_vs2022_x64_md, dirs_exist_ok=True)
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-md/debug/lib', path_to_libs_vs2022_x64_mdd, dirs_exist_ok=True)
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-md/include', path_to_module / 'include', dirs_exist_ok=True)
+
+        # Headers
+        shutil.copytree(f'{vcpkg_installed}/windows-x64-md/include', path_to_module / 'include', dirs_exist_ok=True)
 
     shutil.copytree('include', path_to_module / 'include', dirs_exist_ok=True)
     shutil.copytree('src', path_to_module / 'src', dirs_exist_ok=True)

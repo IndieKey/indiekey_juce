@@ -13,7 +13,7 @@
     minimumCppStandard:   17
     OSXLibs:              sodium sqlite3 SQLiteCpp
     linuxLibs:            sodium sqlite3 SQLiteCpp
-    windowsLibs:          sodium sqlite3 SQLiteCpp
+    windowsLibs:          libsodium sqlite3 SQLiteCpp
 
     END_JUCE_MODULE_DECLARATION
 */
