@@ -10,7 +10,7 @@ definitions:
         name: 'Build for macOS'
         script:
           - git submodule update --recursive --init
-          - brew install pkg-config
+          - brew install pkg-config autoconf automake libtool
           - python3 -m pip install pygit2
           - python3 -u build.py --path-to-build build-macos --build-number $BITBUCKET_BUILD_NUMBER
         artifacts:
