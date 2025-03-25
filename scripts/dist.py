@@ -70,12 +70,10 @@ def build(args):
         json.dump(version_data, file, indent=4)
 
     archive_path = path_to_build / f'indiekey_juce-{git_version}-{args.build_number}-dist'
-    zip_path = Path(archive_path.with_suffix('.zip'))
-    zip_path.unlink(missing_ok=True)
-    shutil.make_archive(str(archive_path), 'zip', path_to_module)
+    path_to_zip = shutil.make_archive(str(archive_path), 'zip', path_to_module)
 
     if args.upload:
-        upload_to_spaces(args, zip_path)
+        upload_to_spaces(args, Path(path_to_zip))
 
 
 def main():
