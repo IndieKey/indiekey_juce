@@ -1,6 +1,6 @@
 //
 // Created by Ruurd Adema on 04/10/2023.
-// Copyright (c) 2023 Sound on Digital. All rights reserved.
+// Copyright (c) 2025 IndieKey LTD. All rights reserved.
 //
 
 #include "indiekey/ActivationsDatabase.h"
