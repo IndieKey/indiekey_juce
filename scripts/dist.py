@@ -5,6 +5,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+import boto3
 import pygit2
 
 script_path = Path(__file__)
@@ -16,6 +17,37 @@ git_version = repo.describe(pattern='v*')
 git_branch = repo.head.shorthand
 
 juce_module_name = 'indiekey_juce'
+
+
+def upload_to_spaces(args, file: Path):
+    session = boto3.session.Session()
+
+    key = args.spaces_key
+    secret = args.spaces_secret
+
+    if not key:
+        raise Exception('Need spaces key')
+
+    if not secret:
+        raise Exception('Need spaces secret')
+
+    client = session.client('s3',
+                            endpoint_url="https://lon1.digitaloceanspaces.com",
+                            region_name="lon1",
+                            aws_access_key_id=key,
+                            aws_secret_access_key=secret)
+
+    folder = 'branches/' + git_branch
+
+    if git_branch == 'HEAD':
+        # If we're in head, we're most likely building from a tag in which case we want to archive the artifacts
+        folder = 'archive/' + git_version
+
+    bucket = 'indiekey-juce'
+    file_name = folder + '/' + file.name
+    client.upload_file(str(file), bucket, file_name)
+
+    print("Uploaded artefacts to {}/{}".format(bucket, file_name))
 
 
 def build(args):
@@ -41,6 +73,9 @@ def build(args):
     zip_path = Path(archive_path.with_suffix('.zip'))
     zip_path.unlink(missing_ok=True)
     shutil.make_archive(str(archive_path), 'zip', path_to_module)
+
+    if args.upload:
+        upload_to_spaces(args, zip_path)
 
 
 def main():
