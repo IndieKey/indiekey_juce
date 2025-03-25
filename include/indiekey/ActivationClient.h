@@ -49,7 +49,7 @@ public:
     };
 
     /**
-     * Baseclass for other classes who are interested in updates from an ActivationClient.
+     * Base class for other classes that are interested in updates from an ActivationClient.
      */
     class Subscriber
     {
@@ -58,8 +58,11 @@ public:
 
         /**
          * Called in response to calling subscribeToActivationClient and validate and contains the currently loaded
-         * activation, or nullptr if no activation is loaded. It the latter is the case then no activations were
-         * available at all.
+         * activation, or nullptr if no activation is loaded. If the latter is the case then no activations were
+         * available.
+         *
+         * This function will always be called on the message thread.
+         *
          * @param mostValuableActivation The loaded most valuable activation or nullptr of no activation is available.
          * @package trialActivationExists True if a trial activation exists, false otherwise.
          */
