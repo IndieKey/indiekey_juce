@@ -29,12 +29,11 @@ def verify_architecture(path: Path, expected_architectures: [string]):
     :param path: The path of the file to check.
     :param expected_architectures: The expected architectures.
     """
-    output = subprocess.run(['file', path], stdout=subprocess.PIPE, check=True)
-    stdout = output.stdout.decode('utf-8').strip()
 
     for arch in expected_architectures:
-        if not re.search('Mach-O 64-bit.+ ' + arch, stdout):
-            print(stdout)
+        try:
+            subprocess.run(['lipo', path, '-verify_arch', arch], check=True)
+        except subprocess.CalledProcessError as e:
             raise Exception('File "' + str(path) + '" does not contain code for architecture ' + arch)
 
     print('Verified "' + str(path) + '" to contain code for arch(s): [' + ', '.join(expected_architectures) + ']')
@@ -56,7 +55,7 @@ def lipo(input_base_path_x86_64: Path, input_base_path_arm64: Path, output_base_
 
     subprocess.run(['lipo', '-create', x86_64_file_path, arm64_file_path, '-output', output_file_path], check=True)
 
-    # verify_architecture(output_file_path, ['x86_64', 'arm64'])
+    verify_architecture(output_file_path, ['x86_64', 'arm64'])
 
 
 def lipo_glob(input_base_path_x86_64: Path, input_base_path_arm64: Path, output_base_path: Path, glob_pattern):
