@@ -1,29 +1,14 @@
+cmake_minimum_required(VERSION 3.22)
+
 project(ActivationClient)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(indiekey_juce INTERFACE)
 
-target_sources(indiekey_juce
-        INTERFACE
-        # Headers
-        include/indiekey/ActivationClient.h
-        include/indiekey/RestClient.h
-        include/indiekey/Activation.h
-        include/indiekey/Crypto.h
-        include/indiekey/ActivationsDatabase.h
-        include/indiekey/util/ScopedFunction.h
+file(GLOB_RECURSE HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-        # Sources
-        src/ActivationClient.cpp
-        src/RestClient.cpp
-        src/Activation.cpp
-        src/Crypto.cpp
-        src/ActivationsDatabase.cpp
-)
+target_sources(indiekey_juce INTERFACE ${HEADER_FILES} ${SOURCE_FILES})
 
-target_include_directories(indiekey_juce
-        INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libsodium/include
-)
+target_include_directories(indiekey_juce INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)

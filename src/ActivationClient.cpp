@@ -1,6 +1,6 @@
 //
 // Created by Ruurd Adema on 28/07/2023.
-// Copyright (c) 2023 Sound on Digital. All rights reserved.
+// Copyright (c) 2025 IndieKey LTD. All rights reserved.
 //
 
 #include "indiekey/ActivationClient.h"
@@ -10,25 +10,35 @@
 #include "indiekey/messages/ActivationRequest.h"
 #include "indiekey/messages/OfflineRequest.h"
 #include "indiekey/messages/TrialRequest.h"
-#include "indiekey/util/ScopedFunction.h"
+
+const char* indiekey::ActivationClient::trialStatusToString (const TrialStatus status)
+{
+    switch (status)
+    {
+    case TrialStatus::Undefined:
+        return "Undefined";
+    case TrialStatus::TrialAvailable:
+        return "TrialAvailable";
+    case TrialStatus::TrialActive:
+        return "TrialActive";
+    case TrialStatus::TrialExpired:
+        return "TrialExpired";
+    default:
+        return "n/a";
+    }
+}
 
 indiekey::ActivationClient::ActivationClient()
 {
     crypto::init();
 }
 
-void indiekey::ActivationClient::ping (int value) const
+int indiekey::ActivationClient::ping (const int value) const
 {
-    nlohmann::json j;
-    j.at ("id") = value;
-
-    auto response = restClient_->post ("/ping", j);
-
+    auto response = restClient_->get ("/ping?timestamp=" + juce::String (value));
     response.throwIfNotSuccessful();
-
-    auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
-
-    std::cout << response.statusCode << " " << jsonResponse.dump() << '\n';
+    const auto jsonResponse = nlohmann::json::parse (response.body.toRawUTF8());
+    return jsonResponse["timestamp"].get<int>();
 }
 
 void indiekey::ActivationClient::setProductData (const char* encodedProductData)
@@ -51,9 +61,9 @@ void indiekey::ActivationClient::setProductData (const char* encodedProductData)
     activationsDatabase_.openDatabase (ActivationsDatabase::Options { getLocalActivationsDatabaseFile() });
 }
 
-void indiekey::ActivationClient::validate (ValidationStrategy validationStrategy)
+void indiekey::ActivationClient::validate (const ValidationStrategy validationStrategy)
 {
-    const Defer defer ([this] {
+    juce::ErasedScopeGuard callListeners ([this] {
         listeners_.call ([this] (Subscriber& s) {
             s.onActivationsUpdated (mostValuableActivation_.get());
         });

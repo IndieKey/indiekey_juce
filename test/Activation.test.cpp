@@ -1,6 +1,6 @@
 //
 // Created by Ruurd Adema on 13/10/2023.
-// Copyright (c) 2023 Sound on Digital. All rights reserved.
+// Copyright (c) 2025 IndieKey LTD. All rights reserved.
 //
 
 #include <gtest/gtest.h>

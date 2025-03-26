@@ -1,6 +1,6 @@
 //
 // Created by Ruurd Adema on 28/07/2023.
-// Copyright (c) 2023 Sound on Digital. All rights reserved.
+// Copyright (c) 2025 IndieKey LTD. All rights reserved.
 //
 
 #pragma once
@@ -66,7 +66,7 @@ public:
          * @param mostValuableActivation The loaded most valuable activation or nullptr of no activation is available.
          * @package trialActivationExists True if a trial activation exists, false otherwise.
          */
-        virtual void onActivationsUpdated (const Activation* mostValuableActivation) = 0;
+        virtual void onActivationsUpdated ([[maybe_unused]] const Activation* mostValuableActivation) {}
     };
 
     explicit ActivationClient();
@@ -151,7 +151,7 @@ public:
      * Sends a ping to the server.
      * @param value
      */
-    void ping (int value) const;
+    int ping (int value) const;
 
     /**
      * @returns A default device info string which consists of computer name, operating system name, cpu model, device
@@ -188,6 +188,12 @@ public:
      * @param subscriber The listener to remove.
      */
     void removeListener (Subscriber* subscriber);
+
+    /**
+     * @param status The status to get a string for.
+     * @returns A string representation of the given trial status.
+     */
+    static const char* trialStatusToString (TrialStatus status);
 
 private:
     std::unique_ptr<RestClient> restClient_;
