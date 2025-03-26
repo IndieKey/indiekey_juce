@@ -11,8 +11,8 @@ in how dependencies are managed. We'll cover the following methods:
 ### Adding the distribution package to your project
 
 We publish a distribution package that contains the SDK as a JUCE module and the dependencies as precompiled binaries.
-This makes it super easy to integrate the SDK into your project, without worrying about dependencies (which can be quite
-a hassle).
+This makes it super easy to integrate the SDK into your project, without worrying about dependencies (which can be
+difficult to build).
 
 1. Download the latest distribution package from the [releases page](#todo).
 2. Extract the contents of the package to a folder in your project.
