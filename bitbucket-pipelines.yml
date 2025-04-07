@@ -40,6 +40,19 @@ definitions:
         depends-on:
           - build-macos
           - build-windows
+    - step: &dist-publish
+        runs-on:
+          - 'self.hosted'
+          - 'macos'
+        name: 'Publish the distribution package'
+        trigger: manual
+        script:
+          - python3 -m pip install pygit2 boto3
+          - python3 -u scripts/dist.py -publish --path-to-build build-dist --spaces-key $SPACES_KEY --spaces-secret $SPACES_SECRET
+        artifacts:
+          - build-dist/*.zip
+        depends-on:
+          - build-dist
 
 pipelines:
   pull-requests:
@@ -54,6 +67,7 @@ pipelines:
         - step: *build-macos
         - step: *build-windows
       - step: *build-dist
+      - step: *dist-publish
   branches:
     main:
       - parallel:
@@ -70,3 +84,4 @@ pipelines:
         - step: *build-macos
         - step: *build-windows
       - step: *build-dist
+      - step: *dist-publish

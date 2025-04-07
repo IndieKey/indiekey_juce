@@ -91,7 +91,6 @@ def build(args):
     env['VCPKG_OVERLAY_TRIPLETS'] = str(script_dir / 'triplets')
 
     if platform.system() == 'Darwin':
-
         subprocess.run([Path('submodules') / 'vcpkg' / 'bootstrap-vcpkg.sh'], check=True, cwd=script_dir)
         vcpkg = Path('submodules') / 'vcpkg' / 'vcpkg'
 
