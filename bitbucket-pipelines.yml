@@ -36,6 +36,7 @@ definitions:
           - python3 -u scripts/dist.py --path-to-build build-dist --build-number $BITBUCKET_BUILD_NUMBER --upload --spaces-key $SPACES_KEY --spaces-secret $SPACES_SECRET
         artifacts:
           - build-dist/*.zip
+          - build-dist/*.json
         depends-on:
           - build-macos
           - build-windows
@@ -48,8 +49,6 @@ definitions:
         script:
           - python3 -m pip install pygit2 boto3
           - python3 -u scripts/dist.py --publish --path-to-build build-dist --spaces-key $SPACES_KEY --spaces-secret $SPACES_SECRET
-        artifacts:
-          - build-dist/*.zip
         depends-on:
           - build-dist
 
