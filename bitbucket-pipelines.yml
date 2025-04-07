@@ -48,7 +48,7 @@ definitions:
         trigger: manual
         script:
           - python3 -m pip install pygit2 boto3
-          - python3 -u scripts/dist.py -publish --path-to-build build-dist --spaces-key $SPACES_KEY --spaces-secret $SPACES_SECRET
+          - python3 -u scripts/dist.py --publish --path-to-build build-dist --spaces-key $SPACES_KEY --spaces-secret $SPACES_SECRET
         artifacts:
           - build-dist/*.zip
         depends-on:
