@@ -9,8 +9,6 @@ from pathlib import Path
 import boto3
 import pygit2
 
-from submodules.indiekey_sdk.build import dist_dir
-
 script_path = Path(__file__)
 script_dir = script_path.parent
 

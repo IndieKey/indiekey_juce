@@ -44,7 +44,7 @@ definitions:
         runs-on:
           - 'self.hosted'
           - 'macos'
-        name: 'Publish the distribution package'
+        name: 'Publish'
         trigger: manual
         script:
           - python3 -m pip install pygit2 boto3
