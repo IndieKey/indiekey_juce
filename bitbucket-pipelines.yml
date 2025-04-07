@@ -82,4 +82,3 @@ pipelines:
         - step: *build-macos
         - step: *build-windows
       - step: *build-dist
-      - step: *dist-publish
