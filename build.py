@@ -154,7 +154,7 @@ def build(args):
 
     shutil.copytree(script_dir / 'include', path_to_module / 'include', dirs_exist_ok=True)
     shutil.copytree(script_dir / 'src', path_to_module / 'src', dirs_exist_ok=True)
-    shutil.copy2(script_dir / 'CMakeLists.txt', path_to_module)
+    shutil.copy2(script_dir / 'CMakeLists.dist.txt', path_to_module / 'CMakeLists.txt')
     shutil.copy2(script_dir / 'indiekey_juce.h', path_to_module)
     shutil.copy2(script_dir / 'indiekey_juce.cpp', path_to_module)
 
