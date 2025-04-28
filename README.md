@@ -13,7 +13,9 @@ We publish a distribution package that contains the SDK as a JUCE module and the
 This makes it super easy to integrate the SDK into your project, without worrying about dependencies (which can be
 difficult to build).
 
-#### CMake FetchContent
+#### CMake
+
+##### FetchContent
 
 If you're using CMake, you can use the `FetchContent` module to download the SDK and its dependencies. This is the
 recommended approach for CMake based projects.
@@ -27,39 +29,37 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(indiekey_juce)
-
-target_link_libraries(YourTarget
-        PUBLIC
-        juce::juce_recommended_config_flags
-        juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags
-
-        PRIVATE
-        juce::juce_core
-        indiekey_juce
-)
 ```
 
-#### CMake CPM
+##### CMake CPM
 
 If you're using CMake and prefer to use [CPM](https://github.com/cpm-cmake/CPM.cmake) to manage your dependencies, you can use the following code snippet to download the SDK and its dependencies.
 
 ```cmake
 include(cmake/CPM.cmake)
 
-CPMAddPackage("https://indiekey-juce.lon1.digitaloceanspaces.com/download/indiekey_juce-v0.3.0-dist.zip")
+CPMAddPackage(
+        NAME indiekey_juce
+        URL https://indiekey-juce.lon1.digitaloceanspaces.com/download/indiekey_juce-v0.3.0-dist.zip
+)
+``` 
 
+##### Linking
+
+Once the library is added through `FetchContent` or `CPM`, you can link it to your target using the `target_link_libraries` command:
+
+```cmake
 target_link_libraries(YourTarget
+        PRIVATE
+        juce::juce_core
+        indiekey_juce
+        
         PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
-
-        PRIVATE
-        juce::juce_core
-        indiekey_juce
 )
-``` 
+```
 
 #### Projucer
 
