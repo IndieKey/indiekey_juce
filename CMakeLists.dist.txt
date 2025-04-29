@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.24)
+
+project(IndieKeyJuce)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_library(indiekey_juce INTERFACE)
+
+file(GLOB_RECURSE HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
+file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+target_sources(indiekey_juce INTERFACE ${HEADER_FILES} ${SOURCE_FILES})
+
+target_include_directories(indiekey_juce INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(indiekey_juce INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/MacOSX/libsodium.a
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/MacOSX/libsqlite3.a
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/MacOSX/libSQLiteCpp.a
+    )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if (MSVC)
+        if (NOT MSVC_TOOLSET_VERSION STREQUAL "143")
+            message(FATAL_ERROR "Unsupported MSVC toolset version: ${MSVC_TOOLSET_VERSION}. Toolset 143 is required (Visual Studio 2022).")
+        endif ()
+    endif ()
+
+    set(RUNTIME_LIB "$<GENEX_EVAL:$<TARGET_PROPERTY:MSVC_RUNTIME_LIBRARY>>")
+    set(SUBFOLDER "MDd")
+    set(SUBFOLDER "$<IF:$<STREQUAL:${RUNTIME_LIB},MultiThreadedDebug>,MTd,${SUBFOLDER}>")
+    set(SUBFOLDER "$<IF:$<STREQUAL:${RUNTIME_LIB},MultiThreadedDLL>,MD,${SUBFOLDER}>")
+    set(SUBFOLDER "$<IF:$<STREQUAL:${RUNTIME_LIB},MultiThreaded>,MT,${SUBFOLDER}>")
+
+    target_link_directories(indiekey_juce INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/libs/VisualStudio2022/x64/${SUBFOLDER})
+    target_link_libraries(indiekey_juce INTERFACE libsodium.lib sqlite3.lib SQLiteCpp.lib)
+endif ()
