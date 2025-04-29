@@ -31,7 +31,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(indiekey_juce)
 ```
 
-##### CMake CPM
+##### CPM
 
 If you're using CMake and prefer to use [CPM](https://github.com/cpm-cmake/CPM.cmake) to manage your dependencies, you can use the following code snippet to download the SDK and its dependencies.
 
